@@ -1,0 +1,7 @@
+[
+	{
+		"directory": "/home/matyk/c_tests/c_fetch",
+		"command": "gcc -IX11 -lX11 cfetch.c -o cfetch",
+		"file": "/home/matyk/cfetch.c"
+	}
+]

@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/home/matyk/c_tests/gui_editor",
+  "command": "/usr/bin/cc  -I/home/matyk/c_tests/gui_editor/lib -I/usr/include/cairo -g -o CMakeFiles/bar.dir/src/main.c.o -c /home/matyk/c_tests/gui_editor/src/main.c",
+  "file": "/home/matyk/c_tests/gui_editor/src/main.c"
+},
+{
+  "directory": "/home/matyk/c_tests/gui_editor",
+  "command": "/usr/bin/cc  -I/home/matyk/c_tests/gui_editor/lib -I/usr/include/cairo -g -o CMakeFiles/bar.dir/lib/app.c.o -c /home/matyk/c_tests/gui_editor/lib/app.c",
+  "file": "/home/matyk/c_tests/gui_editor/lib/app.c"
+}
+]
