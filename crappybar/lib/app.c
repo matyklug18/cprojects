@@ -82,7 +82,7 @@ void paint(main_window* app, const char* text_in) {
 	cairo_move_to(app->cairo, app->font_size / 2, app->font_pos);
 
 	//select the font
-	cairo_select_font_face(app->cairo, "Cascadia Code", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+	cairo_select_font_face(app->cairo, "Hack Nerd Font Mono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 
 	//set the size of the font
 	cairo_set_font_size(app->cairo, app->font_size);
@@ -111,7 +111,7 @@ void exit_app(main_window* app) {
 
 //update the text && repaint 
 void update_text(main_window* app) {
-	char out[100];
+	char out[255];
 	app->text_update(out);
 	paint(app, out);
 }
@@ -154,7 +154,7 @@ void* event_loop(void* inp_app) {
 			//get the events data from xbutton,
 			//which is the data for the event, since the type is ButtonPress.
 			XButtonEvent ev = e.xbutton;
-			printf("%d, %d\n\n", ev.x, ev.y);
+			printf("%d %d\n", ev.x, ev.y);
 			fflush(stdout);
 		}
 

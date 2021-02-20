@@ -4,29 +4,34 @@
 
 #include "app.h"
 
-char cmd[100] = "";
+char buff[255] = "";
 
 //function for getting the text. gets executed in the interval, plus every time it is needed. (resize, expose...)
 void get_out(char* out) {
-	char text[100] = "";
-	FILE *p;
-	char ch;
-	p = popen(cmd,"r");
-	while( (ch=fgetc(p)) != EOF)
-		strncat(text, &ch, 1);
-	text[strlen(text)-1] = 0;
-	pclose(p);
-	strcpy(out, text);
+//char text[255] = "";
+//FILE *p;
+//char ch;
+//p = popen(cmd,"r");
+//while( (ch=fgetc(p)) != EOF)
+//	strncat(text, &ch, 1);
+//text[strlen(text)-1] = 0;
+//pclose(p);
+//strcpy(out, text);
+//strcpy(out, "");
+	fgets(out, 255, stdin);
+	if(strlen(out) == 0) {
+		strcpy(out, buff);
+	} else {
+		strcpy(buff, out);
+	}
 }
 
 int main(int argc, char* argv[]) {
-	strcpy(cmd, "date");
-
 	//initialize the app (height, size, pos)
-	main_window app = init((app_params){16, 8, 11});
+	main_window app = init((app_params){32, 16, 22});
 
 	//start the app
-	start(&app, get_out, 1.0);
+	start(&app, get_out, 0.01);
 
 	//block, because both functions are async
 	while(True) {
