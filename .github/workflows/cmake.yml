@@ -16,7 +16,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-
+    
+    - name: Install PThreads
+      run: sudo apt-get update && sudo apt-get install -yq libpthread-stubs0-dev
+      
+    - name: Install cairo
+      run: sudo apt-get update && sudo apt-get install -yq libcairo2-dev
+      
     - name: Configure CMake
       # Use a bash shell so we can use the same syntax for environment variable
       # access regardless of the host operating system
@@ -26,9 +32,6 @@ jobs:
       # and build directories, but this is only available with CMake 3.13 and higher.  
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
       run: cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
-
-    - name: Install Dependencies
-      run: sudo apt-get update && sudo apt-get install -yq libcairo2-dev
 
     - name: Build
       working-directory: ${{github.workspace}}/crappybar/build
