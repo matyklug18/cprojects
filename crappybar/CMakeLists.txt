@@ -21,7 +21,7 @@ target_link_libraries(bar ${X11_LIBRARIES})
 target_include_directories(bar PRIVATE ${X11_INCLUDE_DIR})
 
 set(CAIRO_INCLUDE_DIRS "/usr/include/cairo/")
-set(CAIRO_LIBRARIES "/usr/lib/libcairo.so")
+set(CAIRO_LIBRARIES "/usr/lib/x86_64-linux-gnu/libcairo.so")
 target_link_libraries(bar ${CAIRO_LIBRARIES})
 target_include_directories(bar PRIVATE ${CAIRO_INCLUDE_DIRS})
 
