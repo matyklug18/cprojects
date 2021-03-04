@@ -1,4 +1,4 @@
-def run():
+while True:
     maxi = 6
 
     from datetime import datetime
@@ -28,5 +28,3 @@ def run():
 
     print(' '*(1920//16+16*2+4)+current_time)
 
-while True:
-    run()

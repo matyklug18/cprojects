@@ -24,15 +24,17 @@ main_window init(const app_params params) {
 	//the cairo surface, used when drawing
 	cairo_surface_t *sfc;
 
-	//open the display, and in case it fails, exit
-	if ((dsp = XOpenDisplay(NULL)) == ((void *)0))
-		exit(1);
+	XInitThreads();
+
+	//open the display
+	dsp = XOpenDisplay(NULL);
 
 	//set the screen to the default screen (?)
 	screen = DefaultScreen(dsp);
 
 	//create the window, telling X it exists without showing it
-	da = XCreateSimpleWindow(dsp, DefaultRootWindow(dsp), 0, 0, 1, params.height, 0, 0, 0);
+	da = XCreateSimpleWindow(dsp, DefaultRootWindow(dsp), 0, 0, DisplayWidth(dsp, screen), params.height, 0, 0, 0);
+	sleep(0.1);
 
 	//tell xorg, that we want mouse button events, resize events and repaint needed events (?).
 	XSelectInput(dsp, da, ButtonPressMask | StructureNotifyMask | ExposureMask);
@@ -44,16 +46,18 @@ main_window init(const app_params params) {
 			XA_ATOM, 32, PropModeReplace, (unsigned char *) &value, 1);
 
 	//move the bar to the bottom of the screen
-	XMoveWindow(dsp, da, 0, DisplayWidth(dsp, screen));
+	XMoveWindow(dsp, da, 0, DisplayHeight(dsp, screen));
 
 	//actually show the window
 	XMapWindow(dsp, da);
 
 	//create the cairo surface, so we can draw to the window
-	sfc = cairo_xlib_surface_create(dsp, da, DefaultVisual(dsp, screen), 1, params.height);
+	sfc = cairo_xlib_surface_create(dsp, da, DefaultVisual(dsp, screen), DisplayWidth(dsp, screen), params.height);
+
+	sleep(0.1);
 
 	//resize the surface (?)
-	cairo_xlib_surface_set_size(sfc, 1, params.height);
+	cairo_xlib_surface_set_size(sfc, DisplayWidth(dsp, screen), params.height);
 
 	//create the cairo type, which is usually used when drawing
 	cairo_t* ctx = cairo_create(sfc);
@@ -148,6 +152,10 @@ void* event_loop(void* inp_app) {
 		//fill the event variable with the next event
 		//wait if there is no next event
 		XNextEvent(app->display, &e);
+
+		if(e.type == MapNotify) {
+
+		}
 
 		//if the event recieved was ButtonPress, which is recieved when a mouse button is pressed...
 		if(e.type == ButtonPress) {

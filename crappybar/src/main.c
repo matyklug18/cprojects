@@ -8,16 +8,6 @@ char buff[255] = "";
 
 //function for getting the text. gets executed in the interval, plus every time it is needed. (resize, expose...)
 void get_out(char* out) {
-//char text[255] = "";
-//FILE *p;
-//char ch;
-//p = popen(cmd,"r");
-//while( (ch=fgetc(p)) != EOF)
-//	strncat(text, &ch, 1);
-//text[strlen(text)-1] = 0;
-//pclose(p);
-//strcpy(out, text);
-//strcpy(out, "");
 	fgets(out, 255, stdin);
 	if(strlen(out) == 0) {
 		strcpy(out, buff);
