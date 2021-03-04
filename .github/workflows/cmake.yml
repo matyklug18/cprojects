@@ -16,10 +16,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    
-    - name: Install PThreads
-      run: sudo apt-get update && sudo apt-get install -yq libpthread-stubs0-dev
-      
+
     - name: Install cairo
       run: sudo apt-get update && sudo apt-get install -yq libcairo2-dev
       
@@ -38,4 +35,11 @@ jobs:
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build . --config $BUILD_TYPE
+      
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v2
+      with:
+        name: my-artifact
+        path: my_file.txt
+      
       
