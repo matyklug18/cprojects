@@ -1,0 +1,17 @@
+pkgname="flexfetch"
+pkgver="1.0.1.1"
+pkgrel=1
+pkgdesc="A Fast Neofetch Alternative"
+arch=("x86_64")
+license=('GPL')
+depends=('libx11' 'fontconfig')
+source=("flexfetch.c")
+sha256sums=("0f4f26f6880011f748de9e2fa9d00d68b205dbfc08c3f9977ac5a0558336cdb1")
+
+build() {
+	gcc -IX11 -lX11 -lpthread flexfetch.c -o flexfetch
+}
+
+package() {
+	install -Dm755 ./flexfetch "$pkgdir/usr/bin/flexfetch"
+}
