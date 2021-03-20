@@ -2,7 +2,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "app.h"
+#include "../lib/app.h"
 
 char buff[255] = "";
 

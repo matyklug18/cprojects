@@ -1,12 +1,12 @@
 pkgname="flexfetch"
-pkgver="1.0.1.1"
+pkgver="1.0.1.2"
 pkgrel=1
 pkgdesc="A Fast Neofetch Alternative"
 arch=("x86_64")
 license=('GPL')
 depends=('libx11' 'fontconfig')
 source=("flexfetch.c")
-sha256sums=("0f4f26f6880011f748de9e2fa9d00d68b205dbfc08c3f9977ac5a0558336cdb1")
+sha256sums=("a812d5307e1bcbaa60e05bd86f69be96c3d0dd79e97448b199cad6c982131cc6")
 
 build() {
 	gcc -IX11 -lX11 -lpthread flexfetch.c -o flexfetch

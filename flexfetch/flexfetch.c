@@ -3,16 +3,13 @@
 
 			/*-------------*\
 		 / |  FLEXFETCH  | \
-		 \ |   1.0.1.0   | / 
+		 \ |   1.0.1.2   | / 
 			\*-------------*/
 /*
- - no longer async
- - fonts should work now
- - fetches compositor
- - fetches pallete
+ - memory fetch should work now
  KNOWN BUGS:
 */
-#define VERSION "v1.0.1.1"
+#define VERSION "v1.0.1.2"
 
 #include <unistd.h>
 #include <stdio.h>
@@ -371,9 +368,9 @@ char* fetch_cpu() {
 
 char* fetch_memtotal() {
 	char mem_kb_str[255] = "";
-	strcpy(mem_kb_str, read_data("/proc/meminfo", "MemTotal", 9));
+	strcpy(mem_kb_str, read_data("/proc/meminfo", "MemTotal:", 0));
 	mem_kb_str[strlen(mem_kb_str)-3] = 0;
-	int mem = atoi(mem_kb_str)/1024;
+	int mem = atoi(mem_kb_str)/1000;
 	char buff[255] = "";
 	sprintf(buff, "%d mB", mem);
 	char* rtn = malloc (sizeof (char) * strlen(buff));
@@ -383,9 +380,9 @@ char* fetch_memtotal() {
 
 char* fetch_memavail() {
 	char mem_kb_str[255] = "";
-	strcpy(mem_kb_str, read_data("/proc/meminfo", "MemAvailable", 5));
+	strcpy(mem_kb_str, read_data("/proc/meminfo", "MemAvailable:", 0));
 	mem_kb_str[strlen(mem_kb_str)-3] = 0;
-	int mem = atoi(mem_kb_str)/1024;
+	int mem = atoi(mem_kb_str)/1000;
 	char buff[255] = "";
 	sprintf(buff, "%d mB", mem);
 	char* rtn = malloc (sizeof (char) * strlen(buff));
@@ -479,8 +476,8 @@ char* fetch_pallete() {
 	return str;
 }
 
-#define MDLCNT 16
-int is_done;
+#define MDLCNT 2
+int is_done = 0;
 char res[MDLCNT][255];
 
 typedef struct async_in {
@@ -491,14 +488,16 @@ typedef struct async_in {
 
 void* fetch_async(void* in_v) {
 	async_in* in = (async_in*) in_v;
-	sprintf(res[in->indx], in->str, in->func());
+	//sprintf(res[in->indx], in->str, in->func());
+	printf(in->str, in->func());
 	is_done += 1;
+	free(in_v);
 	return NULL;
 }
 
 void make_async(char* str, char* (*func)(), int indx) {
 	async_in* async = malloc(sizeof(async_in));
-	async->str = malloc(sizeof(char) * strlen(str));
+	async->str = malloc(sizeof(char) * strlen(str) + 1);
 	strcpy(async->str, str);
 	async->func = func;
 	async->indx = indx;
@@ -508,7 +507,7 @@ void make_async(char* str, char* (*func)(), int indx) {
 
 int main() {
 	dpy = XOpenDisplay(NULL);
-	fetch_compname();
+	//fetch_compname();
 	char* distro_arch = "\n\
 \033[38;2;23;147;209m                   ▄\n\
                   ▟█▙\n\
@@ -560,7 +559,7 @@ int main() {
 	if(strcmp(distro_id, "manjaro") == 0)
 		printf("%s", distro_manjaro);
 
-	int indx = 0;
+//int indx = 0;
 //make_async("\033[1;34mWM              \033[0;36m%s\n", fetch_wmname,			indx++);
 //make_async("\033[1;34mHOSTNAME        \033[0;36m%s\n", fetch_hostname,		indx++);
 //make_async("\033[1;34mTERMINAL        \033[0;36m%s\n", fetch_terminal,		indx++);
@@ -582,29 +581,29 @@ int main() {
 //	printf("%s", res[i]);
 //printf(    "\033[1;34mFLEXFETCH       \033[0;36m%s\n", VERSION);
 //printf(    "\033[0m");
-  printf(    "\033[1;34mWM              \033[0;36m%s\n", fetch_wmname());
+	printf(    "\033[1;34mWM              \033[0;36m%s\n", fetch_wmname());
 	printf(    "\033[1;34mHOSTNAME        \033[0;36m%s\n", fetch_hostname());
-  printf(    "\033[1;34mTERMINAL        \033[0;36m%s\n", fetch_terminal());
-  print_free("\033[1;34mSYSTEM NAME     \033[0;36m%s\n", fetch_system_name());
+	printf(    "\033[1;34mTERMINAL        \033[0;36m%s\n", fetch_terminal());
+	print_free("\033[1;34mSYSTEM NAME     \033[0;36m%s\n", fetch_system_name());
 	printf(    "\033[1;34mKERNEL          \033[0;36m%s\n", fetch_kernel());
-  print_free("\033[1;34mDISTRO          \033[0;36m%s\n", fetch_os());
-  print_free("\033[1;34mUPTIME          \033[0;36m%s\n", fetch_uptime());
+	print_free("\033[1;34mDISTRO          \033[0;36m%s\n", fetch_os());
+	print_free("\033[1;34mUPTIME          \033[0;36m%s\n", fetch_uptime());
 #ifdef NO_ARCH
-  printf(    "\033[1;34mSHELL           \033[0;36m%s\n", fetch_shell());
+	printf(    "\033[1;34mSHELL           \033[0;36m%s\n", fetch_shell());
 #else
-  print_free("\033[1;34mSHELL           \033[0;36m%s\n", fetch_shell());
-  print_free("\033[1;34mPACKAGES        \033[0;36m%s\n", fetch_packages());
+	print_free("\033[1;34mSHELL           \033[0;36m%s\n", fetch_shell());
+	print_free("\033[1;34mPACKAGES        \033[0;36m%s\n", fetch_packages());
 #endif
-  print_free("\033[1;34mRESOLUTION      \033[0;36m%s\n", fetch_xres());
-  printf(    "\033[1;34mGTK WIDGET      \033[0;36m%s\n", fetch_gtk_widget());
-  printf(    "\033[1;34mGTK ICON        \033[0;36m%s\n", fetch_gtk_icon());
-  printf(    "\033[1;34mGTK CURSOR      \033[0;36m%s\n", fetch_gtk_cursor());
-  printf(    "\033[1;34mUSERNAME        \033[0;36m%s\n", fetch_user());
-  printf(    "\033[1;34mCPU             \033[0;36m%s\n", fetch_cpu());
-  print_free("\033[1;34mMEMORY          \033[0;36m%s\n", fetch_mem());
+	print_free("\033[1;34mRESOLUTION      \033[0;36m%s\n", fetch_xres());
+	printf(    "\033[1;34mGTK WIDGET      \033[0;36m%s\n", fetch_gtk_widget());
+	printf(    "\033[1;34mGTK ICON        \033[0;36m%s\n", fetch_gtk_icon());
+	printf(    "\033[1;34mGTK CURSOR      \033[0;36m%s\n", fetch_gtk_cursor());
+	printf(    "\033[1;34mUSERNAME        \033[0;36m%s\n", fetch_user());
+	printf(    "\033[1;34mCPU             \033[0;36m%s\n", fetch_cpu());
+	print_free("\033[1;34mMEMORY          \033[0;36m%s\n", fetch_mem());
 	print_free("\033[1;34mTERM FONT       \033[0;36m%s\n", fetch_font());
-  printf(    "\033[1;34mCOMPOSITOR      \033[0;36m%s\n", fetch_compname());
+	printf(    "\033[1;34mCOMPOSITOR      \033[0;36m%s\n", fetch_compname());
 	print_free("\033[1;34mPALLETE         \033[0;36m%s\n", fetch_pallete());
 	printf(    "\033[1;34mFLEXFETCH       \033[0;36m%s\n", VERSION);
-  printf(    "\033[0m");
+	printf(    "\033[0m");
 }
