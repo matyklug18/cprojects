@@ -1,15 +1,15 @@
-//usr/bin/gcc -IX11 -lX11 -Ifontconfig -lfontconfig flexfetch.c -o flexfetch -Os; exec ./flexfetch
+//usr/bin/gcc -IX11 -lX11 -lpthread flexfetch.c -o flexfetch -Os; exec ./flexfetch
 // vim: tabstop=2:softtabstop=2:shiftwidth=2:noexpandtab
 
 			/*-------------*\
 		 / |  FLEXFETCH  | \
-		 \ |   1.0.1.2   | / 
+		 \ |   1.0.1.3   | / 
 			\*-------------*/
 /*
  - memory fetch should work now
  KNOWN BUGS:
 */
-#define VERSION "v1.0.1.2"
+#define VERSION "v1.0.1.3"
 
 #include <unistd.h>
 #include <stdio.h>
@@ -29,6 +29,8 @@
 
 //do not fetch the actual font name
 #define NO_FONTC
+
+#define NO_ICON
 
 //hardcoded distro
 //#define DISTRO "manjaro"
@@ -123,6 +125,8 @@ char* read_data(char* file, char* pattern, int offset) {
 		if(getline(&line, &len, fp) == -1)
 			break;
 	}
+
+	if(strstr(line, cmp) == NULL) return "";
 	line += strlen(pattern) + offset;
 	line[strlen(line)-1] = 0;
 	char* rtn = malloc (sizeof (char) * strlen(line));
@@ -287,9 +291,11 @@ char* fetch_shell() {
 			char* cmp = shell;
 			size_t len = 0;
 			while(strstr(line, cmp) == NULL) {
-				if(getline(&line, &len, fp) == -1)
-					goto finish;
+				if(getline(&line, &len, fp) == -1) {
+					break;
+				}
 			}
+			if(strstr(line, cmp) == NULL) continue;
 			char buff_d[255] = "/var/lib/pacman/local/";
 			strcat(buff_d, de->d_name);
 			strcat(buff_d, "/desc");
@@ -299,7 +305,6 @@ char* fetch_shell() {
 			break;
 		}
 	}
-finish:
 	closedir(dir);
   char buff[255] = "";
 	strcpy(buff, out);
@@ -337,19 +342,22 @@ char* fetch_xres() {
 char* fetch_gtk_widget() {
 	char file[255];
 	strcat(strcpy(file, getenv("HOME")), "/.config/gtk-3.0/settings.ini");
-	return read_data(file, "gtk-theme-name", 1);
+	char* res = read_data(file, "gtk-theme-name", 1);
+	return res != "" ? res : "DEFAULT";
 }
 
 char* fetch_gtk_icon() {
 	char file[255];
 	strcat(strcpy(file, getenv("HOME")), "/.config/gtk-3.0/settings.ini");
-	return read_data(file, "gtk-icon-theme-name", 1);
+	char* res = read_data(file, "gtk-icon-theme-name", 1);
+	return res != "" ? res : "DEFAULT";
 }
 
 char* fetch_gtk_cursor() {
 	char file[255];
 	strcat(strcpy(file, getenv("HOME")), "/.config/gtk-3.0/settings.ini");
-	return read_data(file, "gtk-cursor-theme-name", 1);
+	char* res = read_data(file, "gtk-cursor-theme-name", 1);
+	return res != "" ? res : "DEFAULT";
 }
 
 char* fetch_user() {
@@ -548,16 +556,23 @@ int main() {
 ████████  ████████  ████████\n\
 \n\
 ";
+
+#ifndef NO_ICON
+
 #ifdef DISTRO
 	char* distro_id = DISTRO;
 #else
 	char* distro_id = read_data("/etc/os-release", "ID=", 0);
 #endif
+
+
 	if(strcmp(distro_id, "arch") == 0)
 		printf("%s", distro_arch);
 
 	if(strcmp(distro_id, "manjaro") == 0)
 		printf("%s", distro_manjaro);
+
+#endif
 
 //int indx = 0;
 //make_async("\033[1;34mWM              \033[0;36m%s\n", fetch_wmname,			indx++);
